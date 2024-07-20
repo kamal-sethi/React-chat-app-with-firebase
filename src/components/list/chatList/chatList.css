@@ -1,7 +1,7 @@
 .chatList{
      flex: 1;
      overflow: auto;
-     scrollbar-color: rgba(17,25, 40, 0.5) rgba(17,25, 40, 0.5);
+     scrollbar-color: rgba(17,25, 40, 0.5) rgba(175, 193, 225, 0.5);
      scrollbar-width: thin ;
 
      
