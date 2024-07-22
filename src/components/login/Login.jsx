@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../../lib/firebase'
 import { doc, setDoc } from 'firebase/firestore'
+import upload from '../../lib/upload'
 
 const Login = () => {
     
@@ -13,6 +14,7 @@ const Login = () => {
         file:null,
         url:""
     })
+    const[loading,setLoading]=useState(false)
 
     const handleLogin=e=>{
         e.preventDefault();
@@ -21,14 +23,18 @@ const Login = () => {
 
     const handleRegister=async(e)=>{
         e.preventDefault()
-
+        setLoading(true)
         const formData=new FormData(e.target);
         const{username,email,password}=Object.fromEntries(formData);
+        const imgURL=await upload(avatar.file)
+
         try {
             const res=await createUserWithEmailAndPassword(auth,email,password)
+            console.log(res);
             await setDoc(doc(db,"users",res.user.uid),{
                 username,
                 email,
+                avatar:imgURL,
                 id:res.user.uid,
                 blocked:[],
 
@@ -43,6 +49,8 @@ const Login = () => {
         } catch (error) {
             console.log(error);
             toast.error(error.message);
+        }finally{
+            setLoading(false);
         }
 
     }
@@ -64,7 +72,7 @@ const Login = () => {
             <form onSubmit={handleLogin}>
                 <input type='text' placeholder='Email' name='email'/>
                 <input type='password' placeholder='Password' name='password'/>
-                <button >Sign in</button>
+                <button disabled={loading}>{loading?'loading':"Sign in"}</button>
                 
             </form>
         </div>
@@ -80,7 +88,7 @@ const Login = () => {
                 <input type='text' placeholder='Username' name='username'></input>
                 <input type='text' placeholder='Email' name='email'/>
                 <input type='password' placeholder='Password' name='password'/>
-                <button>Sign Up</button>
+                <button disabled={loading}>{loading? "loading": "Sign Up"}</button>
             </form>
         </div>
     </div>
